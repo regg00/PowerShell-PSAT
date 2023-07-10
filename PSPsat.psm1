@@ -120,7 +120,9 @@ function Get-PsatUsers {
         Return (Send-PsatApi -RequestToSend $RequestToSend) | ConvertTo-Json -Depth 5
     }
     else {
-        Return (Send-PsatApi -RequestToSend $RequestToSend).Data
+        $Data = (Send-PsatApi -RequestToSend $RequestToSend).Data
+        $FormattedData = $Data | Select-Object -Property id, type -ExpandProperty attributes
+        Return $FormattedData
     }
     
     
