@@ -127,3 +127,45 @@ function Get-PsatUsers {
         Return $FormattedData
     }                
 }
+
+function Get-PsatPhishing {
+    param (
+        [Int32] $PageNumber,    
+        [Int32] $PageSize = 20,
+        [String[]] $UserEmailAddress,
+        [String[]] $CampaignName,
+        [Switch] $IncludeDeletedUsers,             
+        [Switch] $FormatJson
+        # TODO: Add all parameters
+    )
+
+    $RequestToSend = "/phishing?page[size]=$PageSize"
+
+    if ($PageNumber) {
+        $RequestToSend += "&page[number]=$PageNumber"
+    }
+
+    if ($UserEmailAddress) {
+        $FormattedString = $UserEmailAddress -join ","
+        $RequestToSend += "&filter[_useremailaddress]=[$FormattedString]"
+        
+    }
+
+    if ($CampaignName) {
+        $FormattedString = $CampaignName -join ","
+        $RequestToSend += "&filter[_campaignname]=[$FormattedString]"
+    }
+
+    if ($IncludeDeletedUsers) {
+        $RequestToSend += "&filter[_includedeletedusers]=TRUE"
+    }
+
+    if ($FormatJson) {
+        Return (Send-PsatApi -ApiVersion '0.3.0' -RequestToSend $RequestToSend) | ConvertTo-Json -Depth 5
+    }
+    else {
+        $Data = (Send-PsatApi -ApiVersion '0.3.0' -RequestToSend $RequestToSend).Data
+        $FormattedData = $Data | Select-Object -Property id, type -ExpandProperty attributes
+        Return $FormattedData
+    }                
+}
