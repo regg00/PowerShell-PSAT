@@ -53,34 +53,37 @@ function Save-Token {
 }
 
 
-function Send-PsatApi {
+function Send-ApiRequest {
     <#
     .SYNOPSIS
-    Build requests to be sent to the Psat Api.
+    Build requests and send it to the Psat Api.
 
     #>
     param (
         [Parameter(Mandatory)]
         [ValidateNotNullOrEmpty()]
-        [String] $RequestToSend,
+        [String] $Endpoint,
 
-        [ValidateSet('GET', 'PUT', 'POST', 'DELETE')]
+        [ValidateSet('GET')]
         [String] $Method = 'GET',
         
         [ValidateSet('0.1.0', '0.2.0', '0.3.0')]
-        [String] $ApiVersion = "0.1.0"
+        [String] $ApiVersion = "0.1.0",
+
+        [hashtable] $Body
 
     )
         
     If ($null -eq $env:PsatApiToken) {
-        Throw [Data.NoNullAllowedException]::new('No secret access key has been provided.  Please run Set-NinjaRmmSecrets.')
+        Throw [Data.NoNullAllowedException]::new('No token has been provided.  Please run Connect-Psat.')
     }
 
     $Hostname = "results.us.securityeducation.com"    
 
     $Arguments = @{
         'Method'  = "GET"
-        'Uri'     = "https://$Hostname/api/reporting/v$ApiVersion$RequestToSend"
+        'Uri'     = "https://$Hostname/api/reporting/v$ApiVersion$Endpoint"
+        'Body'    = $Body
         'Headers' = @{
             'x-apikey-token' = $env:PsatApiToken
             'User-Agent'     = "PowerShell/$($PSVersionTable.PSVersion)"
@@ -102,27 +105,33 @@ function Get-PsatUsers {
         [Switch] $FormatJson
     )
 
-    $RequestToSend = "/users?page[size]=$PageSize"
+    
+    $RequestParameters = @{}
+
+    if ($PageSize) {
+        $RequestParameters.Add("page[size]", $PageSize)
+    }
 
     if ($PageNumber) {
-        $RequestToSend += "&page[number]=$PageNumber"
+        $RequestParameters.Add("page[number]", $PageNumber)
     }
 
     if ($UserEmailAddress) {
         $FormattedString = $UserEmailAddress -join ","
-        $RequestToSend += "&filter[_useremailaddress]=[$FormattedString]"
+        $RequestParameters.Add("filter[_useremailaddress]", "[$FormattedString]")
+        $RequestParameters
         
     }
 
     if ($IncludeDeletedUsers) {
-        $RequestToSend += "&filter[_includedeletedusers]=TRUE"
+        $RequestParameters.Add("filter[_includedeletedusers]", "TRUE")
     }
 
     if ($FormatJson) {
-        Return (Send-PsatApi -RequestToSend $RequestToSend) | ConvertTo-Json -Depth 5
+        Return (Send-ApiRequest -Endpoint '/users' -Body $RequestParameters) | ConvertTo-Json -Depth 5
     }
     else {
-        $Data = (Send-PsatApi -RequestToSend $RequestToSend).Data
+        $Data = (Send-ApiRequest -Endpoint '/users' -Body $RequestParameters).Data
         $FormattedData = $Data | Select-Object -Property id, type -ExpandProperty attributes
         Return $FormattedData
     }                
@@ -138,33 +147,37 @@ function Get-PsatPhishing {
         [Switch] $FormatJson
         # TODO: Add all parameters
     )
+    
+    $RequestParameters = @{}
 
-    $RequestToSend = "/phishing?page[size]=$PageSize"
+    if ($PageSize) {
+        $RequestParameters.Add("page[size]", $PageSize)
+    }
 
     if ($PageNumber) {
-        $RequestToSend += "&page[number]=$PageNumber"
+        $RequestParameters.Add("page[number]", $PageNumber)
     }
 
     if ($UserEmailAddress) {
         $FormattedString = $UserEmailAddress -join ","
-        $RequestToSend += "&filter[_useremailaddress]=[$FormattedString]"
+        $RequestParameters.Add("filter[_useremailaddress]", "[$FormattedString]")
         
     }
 
     if ($CampaignName) {
         $FormattedString = $CampaignName -join ","
-        $RequestToSend += "&filter[_campaignname]=[$FormattedString]"
+        $RequestParameters.Add("filter[_campaignname]", "[$FormattedString]")
     }
 
     if ($IncludeDeletedUsers) {
-        $RequestToSend += "&filter[_includedeletedusers]=TRUE"
+        $RequestParameters.Add("filter[_includedeletedusers]", "TRUE")
     }
 
     if ($FormatJson) {
-        Return (Send-PsatApi -ApiVersion '0.3.0' -RequestToSend $RequestToSend) | ConvertTo-Json -Depth 5
+        Return (Send-ApiRequest -ApiVersion '0.3.0' -Endpoint '/phishing' -Body $RequestParameters) | ConvertTo-Json -Depth 5
     }
     else {
-        $Data = (Send-PsatApi -ApiVersion '0.3.0' -RequestToSend $RequestToSend).Data
+        $Data = (Send-ApiRequest -ApiVersion '0.3.0' -Endpoint '/phishing' -Body $RequestParameters).Data
         $FormattedData = $Data | Select-Object -Property id, type -ExpandProperty attributes
         Return $FormattedData
     }                
@@ -181,34 +194,38 @@ function Get-PsatPhishAlarm {
         [Switch] $FormatJson
         # TODO: Add all parameters
     )
+    
+    $RequestParameters = @{}
 
-    $RequestToSend = "/phishalarm?page[size]=$PageSize"
+    if ($PageSize) {
+        $RequestParameters.Add("page[size]", $PageSize)
+    }
 
     if ($PageNumber) {
-        $RequestToSend += "&page[number]=$PageNumber"
+        $RequestParameters.Add("page[number]", $PageNumber)
     }
 
     if ($UserEmailAddress) {
         $FormattedString = $UserEmailAddress -join ","
-        $RequestToSend += "&filter[_useremailaddress]=[$FormattedString]"
+        $RequestParameters.Add("filter[_useremailaddress]", "[$FormattedString]")
         
     } 
     
     if ($Action) {
         $FormattedString = $Action -join ","
-        $RequestToSend += "&filter[_action]=[$FormattedString]"
+        $RequestParameters.Add("filter[_action]", "[$FormattedString]")
         
     }   
 
     if ($IncludeDeletedUsers) {
-        $RequestToSend += "&filter[_includedeletedusers]=TRUE"
+        $RequestParameters.Add("filter[_includedeletedusers]", "TRUE")
     }
 
     if ($FormatJson) {
-        Return (Send-PsatApi -RequestToSend $RequestToSend) | ConvertTo-Json -Depth 5
+        Return (Send-ApiRequest -Endpoint '/phishalarm' -Body $RequestParameters) | ConvertTo-Json -Depth 5
     }
     else {
-        $Data = (Send-PsatApi -RequestToSend $RequestToSend).Data
+        $Data = (Send-ApiRequest -Endpoint '/phishalarm' -Body $RequestParameters).Data
         $FormattedData = $Data | Select-Object -Property id, type -ExpandProperty attributes
         Return $FormattedData
     }                
