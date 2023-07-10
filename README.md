@@ -82,8 +82,4 @@ PS C:\> Get-PsatUsers -FormatJson
 
 ## What else can I do?
 
-There is plenty of help to read. Get started with this:
-
-```powershell
-PS C:\> Get-Help about_****
-```
+There is plenty of help to read. Get started [here](./docs/)
