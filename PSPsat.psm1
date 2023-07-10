@@ -65,7 +65,10 @@ function Send-PsatApi {
         [String] $RequestToSend,
 
         [ValidateSet('GET', 'PUT', 'POST', 'DELETE')]
-        [String] $Method = 'GET'        
+        [String] $Method = 'GET',
+        
+        [ValidateSet('0.1.0', '0.2.0', '0.3.0')]
+        [String] $ApiVersion = "0.1.0"
 
     )
         
@@ -73,12 +76,11 @@ function Send-PsatApi {
         Throw [Data.NoNullAllowedException]::new('No secret access key has been provided.  Please run Set-NinjaRmmSecrets.')
     }
 
-    $Hostname = "results.us.securityeducation.com"
-    $ApiVersion = "v0.1.0"
+    $Hostname = "results.us.securityeducation.com"    
 
     $Arguments = @{
         'Method'  = "GET"
-        'Uri'     = "https://$Hostname/api/reporting/$ApiVersion$RequestToSend"
+        'Uri'     = "https://$Hostname/api/reporting/v$ApiVersion$RequestToSend"
         'Headers' = @{
             'x-apikey-token' = $env:PsatApiToken
             'User-Agent'     = "PowerShell/$($PSVersionTable.PSVersion)"
@@ -123,13 +125,5 @@ function Get-PsatUsers {
         $Data = (Send-PsatApi -RequestToSend $RequestToSend).Data
         $FormattedData = $Data | Select-Object -Property id, type -ExpandProperty attributes
         Return $FormattedData
-    }
-    
-    
-    
-    
+    }                
 }
-
-
-Connect-Psat
-#Get-PsatUsers -FormatJson -PageSize 10
