@@ -40,9 +40,18 @@ By default, the response will be a `PSCustomObject`.
 ```powershell
 PS C:\> Get-PsatUsers
 
-type       id attributes
-----       -- ----------
-fn_user_v1  1 @{useremailaddress=ex-amohsni@test.com; userfirstname=Abdel; userlastname=Mohsni; userlocale=default; usertimezone=America/New_…
+useremailaddress : ex-amohsni@test.com
+userfirstname    : Abdel
+userlastname     : Mohsni
+userlocale       : default
+usertimezone     : America/New_York
+useractiveflag   : True
+userdeleteddate  :
+datalastupdated  : 2023-07-08 8:32:17 PM
+usertags         :
+sso_id           : Unknown
+id               : 1
+type             : fn_user_v1
 ```
 
 You can get the raw response by adding the `-FormatJson` parameter.
