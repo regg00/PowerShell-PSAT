@@ -1,4 +1,4 @@
-<img src="./man/psat.jpg" height="200">
+<img src="./docs/psat.jpg" height="200">
 
 # PowerShell-PSAT
 
