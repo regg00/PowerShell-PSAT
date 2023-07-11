@@ -115,12 +115,14 @@ function Set-RequestCommonParameters {
         [String] $ReportedDateEnd,
         [String] $ReceivedDateStart,
         [String] $ReceivedDateEnd,
-
         [String] $AssignmentStartDateStart,
         [String] $AssignmentStartDateEnd,
         [String] $QuestionDateStart,
         [String] $QuestionDateEnd,
-        [String[]] $AssessmentType
+        [String[]] $AssessmentType,
+
+        [String] $AttemptDateStart,
+        [String] $AttemptDateEnd
     )
 
     $RequestParameters = @{}
@@ -136,6 +138,16 @@ function Set-RequestCommonParameters {
     if ($AssessmentType) {
         $FormattedString = $AssessmentType -join ","
         $RequestParameters.Add("filter[_assessmenttype]", "[$FormattedString]")                
+    }  
+
+    if ($AttemptDateStart) {
+        $FormattedString = $AttemptDateStart -join ","
+        $RequestParameters.Add("filter[_attemptdate_start]", "[$FormattedString]")                
+    }  
+
+    if ($AttemptDateEnd) {
+        $FormattedString = $AttemptDateEnd -join ","
+        $RequestParameters.Add("filter[_attemptdate_end]", "[$FormattedString]")                
     }  
 
     if ($UserEmailAddress) {
@@ -386,9 +398,64 @@ function Get-PsatKnowledgeAssessment {
     }                
 }
 
+function Get-PsatTraining {
+    param (
+        [Int32] $PageNumber,    
+        [Int32] $PageSize,
+        [String[]] $UserEmailAddress,
+        [String[]] $AssignmentName,
+        [String] $AttemptDateStart,
+        [String] $AttemptDateEnd,
+        [String] $AssignmentStartDateStart,
+        [String] $AssignmentStartDateEnd,
+        [String] $AssignmentDueDateStart,
+        [String] $AssignmentDueDateEnd,        
+        [Switch] $IncludeDeletedUsers,             
+        [Switch] $IncludeNotStarted,             
+        [Switch] $IncludeDeletedAssignments,                     
+        [Switch] $FormatJson,
+        [ValidateSet('Randomly Generated', 'Administrator Defined', 'Predefined', 'Automatically Generated')]
+        [String[]] $AssessmentType
+      
+    )
+    
+    $Params = Set-RequestCommonParameters -PageSize $PageSize `
+        -PageNumber $PageNumber `
+        -UserEmailAddress $UserEmailAddress `
+        -AssignmentName $AssignmentName `
+        -AssignmentStartDateStart $AssignmentStartDateStart `
+        -AssignmentStartDateEnd $AssignmentStartDateEnd `
+        -QuestionDateStart $QuestionDateStart `
+        -QuestionDateEnd $QuestionDateEnd `
+        -AssessmentType $AssessmentType  `
+        -AttemptDateStart $AttemptDateStart `
+        -AttemptDateEnd $AttemptDateEnd
+
+    if ($IncludeNotStarted) {
+        $RequestParameters.Add("filter[_includenotstarted]", "TRUE")
+    }
+   
+    
+    if ($IncludeDeletedAssignments) {
+        $RequestParameters.Add("filter[_includedeletedassignments]", "TRUE")
+    }
+
+    if ($IncludeDeletedUsers) {
+        $Params.Add("filter[_includedeletedusers]", "TRUE")        
+    }
+
+    if ($FormatJson) {
+        Return (Send-ApiRequest -ApiVersion '0.3.0' -Endpoint '/training' -Body $Params) | ConvertTo-Json -Depth 5
+    }
+    else {
+        $Data = (Send-ApiRequest -ApiVersion '0.3.0' -Endpoint '/training' -Body $Params).Data
+        $FormattedData = $Data | Select-Object -Property id, type -ExpandProperty attributes
+        Return $FormattedData
+    }                
+}
+
 <#
-TODO:
-    - Knowledge Assessment
+TODO:    
     - Training
     - Training Enrollments
 #>
