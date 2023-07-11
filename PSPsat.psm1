@@ -44,7 +44,7 @@ function Save-Token {
             $JsonContent = [PSCustomObject]@{
                 apiToken = $ApiToken
             }
-            $JsonContent | ConvertTo-Json | Out-File "$env:USERPROFILE/.psat/psat.json"
+            $JsonContent | ConvertTo-Json | Out-File ( New-Item -Path "$env:USERPROFILE/.psat/psat.json" -Force )
         }
 
         1 { Continue }
