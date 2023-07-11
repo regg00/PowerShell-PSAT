@@ -21,7 +21,7 @@
     GUID              = 'cd09f0fe-045e-4b64-b20f-15296fb6a475'
 
     # Author of this module
-    Author            = 'regg0'
+    Author            = 'regg00'
 
     # Company or vendor of this module
     CompanyName       = 'Unknown'
@@ -30,7 +30,7 @@
     Copyright         = '(c) regg0. All rights reserved.'
 
     # Description of the functionality provided by this module
-    # Description = ''
+    Description       = 'A PowerShell module to interact with the Proofpoint Security Awareness Training reporting API.'
 
     # Minimum version of the PowerShell engine required by this module
     # PowerShellVersion = ''
