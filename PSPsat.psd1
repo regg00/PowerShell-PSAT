@@ -12,10 +12,7 @@
     RootModule        = 'PSPsat.psm1'
 
     # Version number of this module.
-    ModuleVersion     = '0.0.7'
-
-    # Supported PSEditions
-    # CompatiblePSEditions = @()
+    ModuleVersion     = '0.0.8'    
 
     # ID used to uniquely identify this module
     GUID              = 'cd09f0fe-045e-4b64-b20f-15296fb6a475'
@@ -33,7 +30,7 @@
     Description       = 'A PowerShell module to interact with the Proofpoint Security Awareness Training reporting API.'
 
     # Minimum version of the PowerShell engine required by this module
-    # PowerShellVersion = ''
+    PowerShellVersion = '3.0'
 
     # Name of the PowerShell host required by this module
     # PowerShellHostName = ''
@@ -95,16 +92,16 @@
         PSData = @{
 
             # Tags applied to this module. These help with module discovery in online galleries.
-            Tags       = @('proofpoint', 'psat', 'security', 'awareness', 'training')
+            Tags                     = @('proofpoint', 'psat', 'security', 'awareness', 'training')
 
             # A URL to the license for this module.
             # LicenseUri = ''
 
             # A URL to the main website for this project.
-            ProjectUri = 'https://github.com/regg00/PowerShell-PSAT'
+            ProjectUri               = 'https://github.com/regg00/PowerShell-PSAT'
 
             # A URL to an icon representing this module.
-            IconUri    = 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQIfU01UPGbVUG8zQ5jSIAEpIfeGUfhiFVGpIuxbLOLrUwT7onZM0k6U8UO7LmITVoCjMI&usqp=CAU'
+            IconUri                  = 'https://raw.githubusercontent.com/regg00/PowerShell-PSAT/main/docs/pp-logo.png'
 
             # ReleaseNotes of this module
             # ReleaseNotes = ''
@@ -113,7 +110,7 @@
             # Prerelease = ''
 
             # Flag to indicate whether the module requires explicit user acceptance for install/update/save
-            # RequireLicenseAcceptance = $false
+            RequireLicenseAcceptance = $false
 
             # External dependent modules of this module
             # ExternalModuleDependencies = @()
