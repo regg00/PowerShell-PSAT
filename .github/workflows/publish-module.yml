@@ -24,7 +24,7 @@ jobs:
         uses: natescherer/publish-powershell-action@v1.0.3
         with:
           token: ${{ secrets.PS_GALLERY_KEY }}
-          target: packages
+          target: gallery
           path: .
 
       
