@@ -5,8 +5,18 @@ function Connect-Psat {
 
     #>
     param (
-        [String] $ApiToken
-    )    
+        [String] $ApiToken,
+        [Switch] $Force
+    )
+    
+    if ($Force) { 
+        # Reset the local file and environment variables
+        $env:PsatApiToken = ""        
+        Remove-Item -Force -ErrorAction SilentlyContinue "$env:USERPROFILE/.psat/psat.json"       
+        Write-Host -ForegroundColor Yellow "All Api Tokens removed. Run the Connect-Psat command again to reconnect."
+        Exit 0
+    }
+
     if ($ApiToken) {
         $env:PsatApiToken = $ApiToken
         Save-Token -ApiToken $ApiToken
@@ -14,6 +24,7 @@ function Connect-Psat {
     }
     elseif (Test-Path "$env:USERPROFILE/.psat/psat.json") {
         $env:PsatApiToken = (Get-Content "$env:USERPROFILE/.psat/psat.json" | Convertfrom-json).apiToken
+        Write-Host -ForegroundColor Yellow "Api Token automatically loaded from user profile."
         
     }
     else {
@@ -45,6 +56,8 @@ function Save-Token {
                 apiToken = $ApiToken
             }
             $JsonContent | ConvertTo-Json | Out-File ( New-Item -Path "$env:USERPROFILE/.psat/psat.json" -Force )
+
+            Write-Host -ForegroundColor Yellow "Api Token sucessfully saved into the user profile."
         }
 
         1 { Continue }
