@@ -18,10 +18,13 @@ jobs:
     steps:
     
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v3
-
+      - uses: actions/checkout@v3    
+          
       - name: Publish PowerShell Module
-        uses: pcgeek86/publish-powershell-module-action@v19
-        id: publish-module
+        uses: natescherer/update-powershell-metadata-action@v1
         with:
-          NuGetApiKey: ${{ secrets.PS_GALLERY_KEY }}
+          token: ${{ secrets.PS_GALLERY_KEY }}
+          target: packages
+          path: .
+
+      
