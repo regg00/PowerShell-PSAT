@@ -114,7 +114,13 @@ function Set-RequestCommonParameters {
         [String] $ReportedDateStart,
         [String] $ReportedDateEnd,
         [String] $ReceivedDateStart,
-        [String] $ReceivedDateEnd
+        [String] $ReceivedDateEnd,
+
+        [String] $AssignmentStartDateStart,
+        [String] $AssignmentStartDateEnd,
+        [String] $QuestionDateStart,
+        [String] $QuestionDateEnd,
+        [String[]] $AssessmentType
     )
 
     $RequestParameters = @{}
@@ -126,6 +132,11 @@ function Set-RequestCommonParameters {
     if ($PageNumber) {
         $RequestParameters.Add("page[number]", $PageNumber)
     }
+
+    if ($AssessmentType) {
+        $FormattedString = $AssessmentType -join ","
+        $RequestParameters.Add("filter[_assessmenttype]", "[$FormattedString]")                
+    }  
 
     if ($UserEmailAddress) {
         $FormattedString = $UserEmailAddress -join ","
@@ -173,6 +184,22 @@ function Set-RequestCommonParameters {
 
     if ($ReceivedDateEnd) {
         $RequestParameters.Add("filter[_receiveddate_end]", $ReceivedDateEnd)
+    }
+
+    if ($AssignmentStartDateStart) {
+        $RequestParameters.Add("filter[_assignmentstartdate_start]", $AssignmentStartDateStart)
+    }
+
+    if ($AssignmentStartDateEnd) {
+        $RequestParameters.Add("filter[_assignmentstartdate_end]", $AssignmentStartDateEnd)
+    }
+
+    if ($QuestionDateStart) {
+        $RequestParameters.Add("filter[_questiondate_start]", $QuestionDateStart)
+    }
+
+    if ($QuestionDateEnd) {
+        $RequestParameters.Add("filter[_questiondate_end]", $QuestionDateEnd)
     }
         
     Return $RequestParameters
@@ -302,6 +329,62 @@ function Get-PsatPhishAlarm {
     }                
 }
 
+
+function Get-PsatKnowledgeAssessment {
+    param (
+        [Int32] $PageNumber,    
+        [Int32] $PageSize,
+        [String[]] $UserEmailAddress,
+        [String[]] $AssignmentName,
+        [String] $AssignmentStartDateStart,
+        [String] $AssignmentStartDateEnd,
+        [String] $QuestionDateStart,
+        [String] $QuestionDateEnd,
+        [Switch] $IncludeDeletedUsers,             
+        [Switch] $IncludeNotStarted,             
+        [Switch] $IncludeDeletedAssignments,             
+        [Switch] $FullQuestion,
+        [Switch] $FormatJson,
+        [ValidateSet('Randomly Generated', 'Administrator Defined', 'Predefined', 'Automatically Generated')]
+        [String[]] $AssessmentType
+      
+    )
+    
+    $Params = Set-RequestCommonParameters -PageSize $PageSize `
+        -PageNumber $PageNumber `
+        -UserEmailAddress $UserEmailAddress `
+        -AssignmentName $AssignmentName `
+        -AssignmentStartDateStart $AssignmentStartDateStart `
+        -AssignmentStartDateEnd $AssignmentStartDateEnd `
+        -QuestionDateStart $QuestionDateStart `
+        -QuestionDateEnd $QuestionDateEnd `
+        -AssessmentType $AssessmentType     
+
+    if ($IncludeNotStarted) {
+        $RequestParameters.Add("filter[_includenotstarted]", "TRUE")
+    }
+
+    if ($FullQuestion) {
+        $RequestParameters.Add("filter[_fullquestion]", "TRUE")
+    }
+    
+    if ($IncludeDeletedAssignments) {
+        $RequestParameters.Add("filter[_includedeletedassignments]", "TRUE")
+    }
+
+    if ($IncludeDeletedUsers) {
+        $Params.Add("filter[_includedeletedusers]", "TRUE")        
+    }
+
+    if ($FormatJson) {
+        Return (Send-ApiRequest -Endpoint '/cyberstrength' -Body $Params) | ConvertTo-Json -Depth 5
+    }
+    else {
+        $Data = (Send-ApiRequest -Endpoint '/cyberstrength' -Body $Params).Data
+        $FormattedData = $Data | Select-Object -Property id, type -ExpandProperty attributes
+        Return $FormattedData
+    }                
+}
 
 <#
 TODO:
