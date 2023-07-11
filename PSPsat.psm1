@@ -455,7 +455,6 @@ function Get-PsatTraining {
 }
 
 <#
-TODO:    
-    - Training
+TODO:        
     - Training Enrollments
 #>
