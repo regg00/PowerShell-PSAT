@@ -1,26 +1,18 @@
-# This is a basic workflow to help you get started with Actions
+name: Publish to PowerShell Gallery
 
-name: Publish PowerShell Module
-
-# Controls when the workflow will run
 on:
   release: 
     types: [published]
   workflow_dispatch:
   
 jobs:
-  # This workflow contains a single job called "build"
-  publish:
-    # The type of runner that the job will run on
+  checkout-and-publish:
     runs-on: ubuntu-latest
-
-    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-    
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v3    
-          
-      - name: Publish PowerShell Module
+      - name: Checkout repo
+        uses: actions/checkout@v3              
+      
+      - name: Publish module
         uses: natescherer/publish-powershell-action@v1.0.3
         with:
           token: ${{ secrets.PS_GALLERY_KEY }}
