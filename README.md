@@ -1,3 +1,4 @@
+![Tests](https://github.com/regg00/PowerShell-PSAT/actions/workflows/ci-cd.yml/badge.svg)
 <img src="./docs/psat.jpg" height="200">
 
 # PowerShell-PSAT
