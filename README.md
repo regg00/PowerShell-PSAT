@@ -8,7 +8,7 @@ A PowerShell module to interact with [the Proofpoint Security Awareness Training
 
 ## Installing this module
 
-This module is available in [PowerShell Gallery](https://www.powershellgallery.com/packages/NinjaRmmApi):
+This module is available in [PowerShell Gallery](https://www.powershellgallery.com/packages/PSPsat):
 
 ```powershell
 PS C:\> Install-Module PSPsat
